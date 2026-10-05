@@ -1,69 +1,91 @@
-import Image from "next/image";
+import Link from "next/link";
+import { lessonGroups, lessons } from "@/lib/course";
+import { CourseProgress } from "@/app/components/course-interactions";
+import { ThemePicker } from "@/app/components/theme-picker";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="home-page">
+      <header className="home-header">
+        <Link className="brand" href="/" aria-label="Accueil documentation C">
+          <span>{"{"}</span> EPITECH <span>{"}"}</span>
+        </Link>
+        <span className="header-label">GUIDE D&apos;APPRENTISSAGE · C</span>
+      </header>
+
+      <section className="home-intro">
+        <p className="kicker">PROGRAMMATION · UNIX · MÉMOIRE</p>
+        <h1>La Piscine C,<br />notion par notion.</h1>
+        <p className="intro-copy">
+          Un guide de révision pour avancer en C : du terminal aux pointeurs,
+          puis aux outils et structures de données utilisés dans les projets.
+          Chaque page présente une notion, un exemple et un exercice à faire.
+        </p>
+        <div className="intro-actions">
+          <Link className="primary-link" href={`/docs/${lessons[0].slug}`}>
+            Commencer le parcours <span aria-hidden="true">→</span>
+          </Link>
+          <span className="course-facts">{lessons.length} CHAPITRES <i /> EXEMPLES C <i /> EXERCICES</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <ThemePicker />
+        <p className="scope-note">
+          Ce support est un guide pédagogique indépendant, pas un document
+          officiel ni une reproduction des sujets EPITECH. Les consignes du
+          sujet de ta Piscine restent prioritaires.
+        </p>
+        <CourseProgress lessons={lessons} />
+      </section>
+
+      <section className="catalog" aria-labelledby="catalog-title">
+        <div className="catalog-heading">
+          <div>
+            <p className="kicker">LE PARCOURS</p>
+            <h2 id="catalog-title">Choisis un chapitre</h2>
+          </div>
+          <span>{String(lessons.length).padStart(2, "0")} LEÇONS</span>
         </div>
-      </main>
-    </div>
+
+        {lessonGroups.map((group, groupIndex) => {
+          const groupedLessons = lessons.filter((lesson) => lesson.group === group);
+
+          return (
+            <section className="catalog-group" key={group}>
+              <div className="group-heading">
+                <span>{String(groupIndex + 1).padStart(2, "0")}</span>
+                <h3>{group}</h3>
+                <span className="group-rule" />
+              </div>
+              <div className="lesson-cards">
+                {groupedLessons.map((lesson) => {
+                  const index = lessons.indexOf(lesson);
+
+                  return (
+                    <Link
+                      className="catalog-card"
+                      href={`/docs/${lesson.slug}`}
+                      key={lesson.slug}
+                    >
+                      <span className="card-number">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="card-content">
+                        <strong>{lesson.title}</strong>
+                        <span>{lesson.summary}</span>
+                      </span>
+                      <span className="card-arrow" aria-hidden="true">↗</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })}
+      </section>
+
+      <footer className="home-footer">
+        <span>EPITECH · SUPPORT DE RÉVISION C</span>
+        <span>APPRENDS EN PRATIQUANT</span>
+      </footer>
+    </main>
   );
 }
